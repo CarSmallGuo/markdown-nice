@@ -1,4 +1,5 @@
 import custom from "./markdown/custom";
+import fullStackBlue from "./markdown/fullStackBlue";
 import normal from "./markdown/normal";
 
 import content from "./content.md";
@@ -22,6 +23,7 @@ import basic from "./basic";
 export default {
   basic,
   normal,
+  fullStackBlue,
   custom,
   code: {
     atomOneDark,

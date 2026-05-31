@@ -12,6 +12,8 @@ import {
 import TEMPLATE from "../template/index";
 import {replaceStyle} from "../utils/helper";
 
+const DEFAULT_THEME_VERSION = "fullStackBlue-v1";
+
 class Navbar {
   // 是否同步滚动
   @observable isSyncScroll = true;
@@ -78,9 +80,14 @@ class Navbar {
 
 const store = new Navbar();
 
+if (window.localStorage.getItem("default_theme_version") !== DEFAULT_THEME_VERSION) {
+  window.localStorage.setItem(TEMPLATE_NUM, 1);
+  window.localStorage.setItem("default_theme_version", DEFAULT_THEME_VERSION);
+}
+
 // 如果为空先把数据放进去
 if (!window.localStorage.getItem(TEMPLATE_NUM)) {
-  window.localStorage.setItem(TEMPLATE_NUM, 0);
+  window.localStorage.setItem(TEMPLATE_NUM, 1);
 }
 
 // 如果为空先把数据放进去

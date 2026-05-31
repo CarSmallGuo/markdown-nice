@@ -1,0 +1,267 @@
+/**
+ * Full Stack Blue for Typora.
+ *
+ * Adapted from the mdnice fullStackBlue article theme.
+ * Install this file into Typora's theme folder, then restart Typora and choose
+ * Theme -> Full Stack Blue.
+ */
+
+:root {
+  --fsb-blue: #40b8fa;
+  --fsb-blue-strong: #3594f7;
+  --fsb-blue-border: #3baafa;
+  --fsb-text: #2b2b2b;
+  --fsb-muted: #595959;
+  --fsb-soft: rgba(64, 184, 250, 0.1);
+  --fsb-soft-border: rgba(64, 184, 250, 0.4);
+}
+
+html,
+body {
+  background: #f8fbfd;
+}
+
+body {
+  color: var(--fsb-text);
+  font-family: Optima-Regular, Optima, PingFangTC-Light, PingFangSC-light, PingFangTC-light, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+#write {
+  max-width: 860px;
+  line-height: 2.25;
+  color: var(--fsb-text);
+  letter-spacing: 2px;
+  background-image:
+    linear-gradient(90deg, rgba(50, 0, 0, 0.04) 3%, rgba(0, 0, 0, 0) 3%),
+    linear-gradient(360deg, rgba(50, 0, 0, 0.04) 3%, rgba(0, 0, 0, 0) 3%);
+  background-position: center center;
+  background-size: 20px 20px;
+  padding: 32px 44px 80px;
+}
+
+#write h1,
+#write h2,
+#write h3,
+#write h4,
+#write h5,
+#write h6,
+#write p,
+#write pre {
+  margin: 1em 0;
+}
+
+#write p {
+  color: var(--fsb-text);
+  font-size: 14px;
+  letter-spacing: 2px;
+  margin: 10px 0;
+  word-spacing: 2px;
+}
+
+#write h1 {
+  color: var(--fsb-blue);
+  display: inline-block;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+#write h2 {
+  border-bottom: 4px solid var(--fsb-blue);
+  color: var(--fsb-blue);
+  display: block;
+  font-size: 20px;
+  margin-top: 1.6em;
+  padding-left: 25px;
+  position: relative;
+}
+
+#write h2::before {
+  background-image: url("https://imgkr.cn-bj.ufileos.com/15fdfb3c-b350-4da9-928e-5f8c506ec325.png");
+  background-size: 20px 20px;
+  content: "";
+  display: block;
+  height: 20px;
+  left: 0;
+  position: absolute;
+  top: 0.35em;
+  width: 20px;
+}
+
+#write h2::after {
+  background: rgba(64, 184, 250, 0.5);
+  border-top-left-radius: 20px;
+  bottom: -10px;
+  content: "";
+  display: block;
+  float: right;
+  height: 10px;
+  position: absolute;
+  right: 0;
+  width: 200px;
+}
+
+#write h3 {
+  color: var(--fsb-text);
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  margin-top: 20px;
+  position: relative;
+  text-align: center;
+}
+
+#write h3::after {
+  border-bottom: 2px solid rgba(79, 177, 249, 0.65);
+  bottom: 0;
+  content: "";
+  display: block;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  width: 7em;
+}
+
+#write h4 {
+  font-size: 16px;
+  line-height: 16px;
+}
+
+#write ul {
+  color: var(--fsb-muted);
+  font-size: 15px;
+  list-style-type: circle;
+}
+
+#write ol {
+  color: var(--fsb-muted);
+  font-size: 15px;
+}
+
+#write blockquote {
+  background: var(--fsb-soft);
+  border: 1px solid var(--fsb-soft-border);
+  border-left: 1px solid var(--fsb-soft-border);
+  border-radius: 6px;
+  box-sizing: inherit;
+  color: var(--fsb-muted);
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.55em;
+  margin: 0;
+  padding: 1em;
+  text-align: left;
+}
+
+#write blockquote::before {
+  color: rgba(64, 184, 250, 0.5);
+  content: "❝";
+  display: block;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+#write blockquote::after {
+  color: rgba(64, 184, 250, 0.5);
+  content: "❞";
+  float: right;
+}
+
+#write blockquote p {
+  color: var(--fsb-muted);
+}
+
+#write a {
+  border-bottom: 1px solid var(--fsb-blue-border);
+  color: var(--fsb-blue);
+  font-weight: 400;
+  text-decoration: none;
+}
+
+#write strong {
+  color: var(--fsb-blue-strong);
+  font-weight: 700;
+}
+
+#write strong::before {
+  content: "「";
+}
+
+#write strong::after {
+  content: "」";
+}
+
+#write em,
+#write em strong,
+#write del {
+  color: var(--fsb-blue-strong);
+  font-weight: 700;
+}
+
+#write hr {
+  border: none;
+  border-top: 2px solid var(--fsb-blue-border);
+  height: 1px;
+  padding: 0;
+}
+
+#write img {
+  border-radius: 6px;
+  box-shadow: 2px 4px 7px #999;
+  display: block;
+  margin: 20px auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+#write p code,
+#write li code,
+#write code {
+  background: rgba(59, 170, 250, 0.1);
+  border-radius: 2px;
+  color: var(--fsb-blue-strong);
+  display: inline-block;
+  font-size: 0.92em;
+  height: 21px;
+  line-height: 22px;
+  padding: 0 2px;
+}
+
+#write pre.md-fences,
+#write pre {
+  background: #f4fbff;
+  border: 1px solid rgba(64, 184, 250, 0.22);
+  border-radius: 6px;
+  color: var(--fsb-muted);
+  letter-spacing: 0;
+  padding: 14px 16px;
+}
+
+#write pre code {
+  background: transparent;
+  color: inherit;
+  display: block;
+  height: auto;
+  letter-spacing: 0;
+  line-height: 1.7;
+  padding: 0;
+}
+
+#write table {
+  border-collapse: collapse;
+  margin: 1em 0;
+  width: 100%;
+}
+
+#write table tr th,
+#write table tr td {
+  border: 1px solid rgba(64, 184, 250, 0.3);
+  color: var(--fsb-muted);
+  font-size: 14px;
+  padding: 8px 10px;
+}
+
+#write table tr th {
+  background: rgba(64, 184, 250, 0.12);
+  color: var(--fsb-blue-strong);
+}

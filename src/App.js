@@ -36,6 +36,8 @@ import {uploadAdaptor} from "./utils/imageHosting";
 import bindHotkeys, {betterTab, rightClick} from "./utils/hotkey";
 import {message} from "antd";
 
+const hasMathContent = (content = "") => /\${1,2}[\s\S]+?\${1,2}/.test(content);
+
 @inject("content")
 @inject("navbar")
 @inject("footer")
@@ -59,43 +61,15 @@ class App extends Component {
     document.addEventListener("webkitfullscreenchange", this.solveScreenChange);
     document.addEventListener("mozfullscreenchange", this.solveScreenChange);
     document.addEventListener("MSFullscreenChange", this.solveScreenChange);
-    try {
-      window.MathJax = {
-        tex: {
-          inlineMath: [["$", "$"]],
-          displayMath: [["$$", "$$"]],
-          tags: "ams",
-        },
-        svg: {
-          fontCache: "none",
-        },
-        options: {
-          renderActions: {
-            addMenu: [0, "", ""],
-            addContainer: [
-              190,
-              (doc) => {
-                for (const math of doc.math) {
-                  this.addContainer(math, doc);
-                }
-              },
-              this.addContainer,
-            ],
-          },
-        },
-      };
-      // eslint-disable-next-line
-      require("mathjax/es5/tex-svg-full");
-      pluginCenter.mathjax = true;
-    } catch (e) {
-      console.log(e);
-    }
     this.setEditorContent();
+    this.setupMathjaxIfNeeded();
     this.setCustomImageHosting();
   }
 
   componentDidUpdate() {
-    if (pluginCenter.mathjax) {
+    if (!pluginCenter.mathjax && hasMathContent(this.props.content.content)) {
+      this.setupMathjaxIfNeeded();
+    } else if (pluginCenter.mathjax) {
       this.handleUpdateMathjax();
     }
   }
@@ -149,6 +123,43 @@ class App extends Component {
       }
       this.props.imageHosting.setType(type);
       window.localStorage.setItem(IMAGE_HOSTING_TYPE, type);
+    }
+  };
+
+  setupMathjaxIfNeeded = async () => {
+    if (pluginCenter.mathjax || !hasMathContent(this.props.content.content)) {
+      return;
+    }
+    try {
+      window.MathJax = {
+        tex: {
+          inlineMath: [["$", "$"]],
+          displayMath: [["$$", "$$"]],
+          tags: "ams",
+        },
+        svg: {
+          fontCache: "none",
+        },
+        options: {
+          renderActions: {
+            addMenu: [0, "", ""],
+            addContainer: [
+              190,
+              (doc) => {
+                for (const math of doc.math) {
+                  this.addContainer(math, doc);
+                }
+              },
+              this.addContainer,
+            ],
+          },
+        },
+      };
+      await import("mathjax/es5/tex-svg-full");
+      pluginCenter.mathjax = true;
+      this.handleUpdateMathjax();
+    } catch (e) {
+      console.log(e);
     }
   };
 

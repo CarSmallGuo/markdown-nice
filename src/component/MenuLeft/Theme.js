@@ -1,5 +1,5 @@
 import React from "react";
-import {Menu, Dropdown} from "antd";
+import {Menu, Dropdown, message} from "antd";
 import {observer, inject} from "mobx-react";
 
 import {RIGHT_SYMBOL, TEMPLATE_NUM, MARKDOWN_THEME_ID, THEME_LIST, STYLE, THEME_API, TOKEN} from "../../utils/constant";
@@ -7,6 +7,22 @@ import {replaceStyle} from "../../utils/helper";
 import TEMPLATE from "../../template/index";
 import "./Theme.css";
 import axios from "axios";
+
+const defaultThemes = [
+  {themeId: "normal", name: "默认主题", css: TEMPLATE.normal},
+  {themeId: "fullStackBlue", name: "全栈蓝", css: TEMPLATE.fullStackBlue},
+  {themeId: "custom", name: "自定义", css: TEMPLATE.custom},
+];
+
+const normalizeThemeList = (themeList = []) => {
+  const remoteThemes = themeList.filter((theme) => typeof theme.css === "string" && theme.css.trim());
+  return [
+    {themeId: "normal", name: "默认主题", css: TEMPLATE.normal},
+    {themeId: "fullStackBlue", name: "全栈蓝", css: TEMPLATE.fullStackBlue},
+    ...remoteThemes,
+    {themeId: "custom", name: "自定义", css: TEMPLATE.custom},
+  ];
+};
 
 @inject("content")
 @inject("navbar")
@@ -24,6 +40,10 @@ class Theme extends React.Component {
       // 切换自定义自动打开css编辑
       this.props.view.setStyleEditorOpen(true);
     } else {
+      if (!css) {
+        message.warning("这个主题暂时没有可用 CSS");
+        return;
+      }
       this.props.content.setStyle(css);
     }
   };
@@ -64,20 +84,23 @@ class Theme extends React.Component {
         remoteThemelist = response.data.data.themeList;
       }
 
-      themeList = [
-        {themeId: "normal", name: "默认主题", css: TEMPLATE.normal},
-        ...remoteThemelist,
-        {themeId: "custom", name: "自定义", css: TEMPLATE.custom},
-      ];
+      themeList = normalizeThemeList(remoteThemelist);
       this.props.content.setThemeList(themeList);
     } catch (err) {
       console.error("读取最新主题信息错误");
       // 降级方案：使用本地的值
-      themeList = JSON.parse(window.localStorage.getItem(THEME_LIST));
+      themeList = normalizeThemeList(JSON.parse(window.localStorage.getItem(THEME_LIST)));
+      if (themeList.length <= defaultThemes.length) {
+        themeList = defaultThemes;
+      }
       this.props.content.setThemeList(themeList);
     }
 
-    const templateNum = parseInt(window.localStorage.getItem(TEMPLATE_NUM), 10);
+    let templateNum = parseInt(window.localStorage.getItem(TEMPLATE_NUM), 10);
+    if (!themeList[templateNum]) {
+      templateNum = 0;
+      this.props.navbar.setTemplateNum(templateNum);
+    }
 
     // 主题样式初始化，属于自定义主题则从localstorage中读数据
     let style = "";

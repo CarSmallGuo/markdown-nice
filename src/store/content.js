@@ -61,18 +61,28 @@ if (!window.localStorage.getItem(THEME_LIST)) {
     THEME_LIST,
     JSON.stringify([
       {themeId: "normal", name: "默认主题", css: TEMPLATE.normal},
+      {themeId: "fullStackBlue", name: "全栈蓝", css: TEMPLATE.fullStackBlue},
       {themeId: "custom", name: "自定义", css: TEMPLATE.custom},
     ]),
   );
 }
 
 store.themeList = JSON.parse(window.localStorage.getItem(THEME_LIST));
+if (!store.themeList.some((theme) => theme.themeId === "fullStackBlue")) {
+  store.themeList = [
+    {themeId: "normal", name: "默认主题", css: TEMPLATE.normal},
+    {themeId: "fullStackBlue", name: "全栈蓝", css: TEMPLATE.fullStackBlue},
+    {themeId: "custom", name: "自定义", css: TEMPLATE.custom},
+  ];
+  window.localStorage.setItem(THEME_LIST, JSON.stringify(store.themeList));
+}
 
 // 在head中添加style标签
 addStyleLabel(STYLE_LABELS);
 
 // 初始化整体主题
 replaceStyle(BASIC_THEME_ID, TEMPLATE.basic);
+replaceStyle(MARKDOWN_THEME_ID, TEMPLATE.fullStackBlue);
 
 store.content = window.localStorage.getItem(CONTENT);
 
