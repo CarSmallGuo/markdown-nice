@@ -99,12 +99,15 @@ hue-6-2: #e6c07b
   padding-top: 15px;
   background: #282c34;
   border-radius: 5px;
+  display: -webkit-box;
+  font-family: Consolas, Monaco, Menlo, monospace;
+  font-size: 12px;
 }
 
 #nice .custom:before {
   content: '';
   display:block;
-  background: url(https://my-wechat.mdnice.com/point.png);
+  background: url(https://files.mdnice.com/user/3441/876cad08-0422-409d-bb5a-08afec5da8ee.svg);
   height: 30px;
   width: 100%;
   background-size:40px;
@@ -118,4 +121,8 @@ hue-6-2: #e6c07b
 #nice .custom {
   border-radius: 5px;
   box-shadow: rgba(0, 0, 0, 0.55) 0px 2px 10px;
+  text-align: left;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 0;
 }`;

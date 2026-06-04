@@ -73,6 +73,35 @@ function listItemSection(md) {
   });
 }
 
+function blockquoteClass(md) {
+  md.core.ruler.push("blockquote_class", () => {
+    md.renderer.rules.blockquote_open = () => '<blockquote class="custom-blockquote multiquote-1" data-tool="mdnice编辑器">';
+  });
+}
+
+function dataToolAttr(md) {
+  md.core.ruler.push("data_tool_attr", (state) => {
+    const supportedTypes = new Set([
+      "paragraph_open",
+      "heading_open",
+      "bullet_list_open",
+      "ordered_list_open",
+      "table_open",
+      "thead_open",
+      "tbody_open",
+      "tr_open",
+      "th_open",
+      "td_open",
+    ]);
+
+    state.tokens.forEach((token) => {
+      if (supportedTypes.has(token.type)) {
+        token.attrSet("data-tool", "mdnice编辑器");
+      }
+    });
+  });
+}
+
 function useOptionalPlugin(md, packageName, options) {
   try {
     md.use(require(packageName), options);
@@ -93,18 +122,20 @@ function createMarkdownParser() {
             .value.replace(/\n/g, "<br/>")
             .replace(/\s/g, "&nbsp;")
             .replace(/span&nbsp;/g, "span ");
-          return `<pre class="custom"><code class="hljs">${highlighted}</code></pre>`;
+          return `<pre class="custom" data-tool="mdnice编辑器"><code class="hljs">${highlighted}</code></pre>`;
         } catch (error) {
           process.stderr.write(`Highlight failed: ${error.message}\n`);
         }
       }
-      return `<pre class="custom"><code class="hljs">${md.utils.escapeHtml(str)}</code></pre>`;
+      return `<pre class="custom" data-tool="mdnice编辑器"><code class="hljs">${md.utils.escapeHtml(str)}</code></pre>`;
     },
   });
 
   md.use(headingSpan)
     .use(tableContainer)
-    .use(listItemSection);
+    .use(listItemSection)
+    .use(blockquoteClass)
+    .use(dataToolAttr);
 
   useOptionalPlugin(md, "markdown-it-katex");
   useOptionalPlugin(md, "markdown-it-table-of-contents", {
@@ -155,31 +186,125 @@ function writeRichClipboard(html, plainText) {
   throw new Error(`Unsupported platform: ${process.platform}`);
 }
 
-function main() {
-  const markdownPath = process.argv[2];
-  if (!markdownPath) {
-    process.stderr.write("Usage: node scripts/copy-full-stack-blue.js /path/to/article.md\n");
-    process.exit(64);
+function parseArgs(args) {
+  const options = {
+    markdownPath: null,
+    outputPath: null,
+    copyClipboard: true,
+  };
+
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index];
+
+    if (arg === "--out" || arg === "-o") {
+      const nextArg = args[index + 1];
+      if (nextArg && !nextArg.startsWith("-")) {
+        options.outputPath = nextArg;
+        index += 1;
+      }
+      continue;
+    }
+
+    if (arg === "--no-clipboard") {
+      options.copyClipboard = false;
+      continue;
+    }
+
+    if (!options.markdownPath) {
+      options.markdownPath = arg;
+      continue;
+    }
+
+    if (!options.outputPath) {
+      options.outputPath = arg;
+    }
   }
 
-  const markdown = fs.readFileSync(markdownPath, "utf8");
+  return options;
+}
+
+function createFullStackBlueHtml(markdown) {
   const md = createMarkdownParser();
   const body = md.render(markdown);
-  const html = `<section id="nice" data-tool="mdnice编辑器">${body}</section>`;
+  const html = `<section id="nice" data-tool="mdnice编辑器" data-website="https://www.mdnice.com">${body}</section>`;
 
   const css = [
     readTemplate("src/template/basic.js"),
     readTemplate("src/template/markdown/fullStackBlue.js"),
-    readTemplate("src/template/code/github.js"),
+    readTemplate("src/template/macCode/macAtomOneDark.js"),
   ].join("\n");
 
-  const inlined = juice.inlineContent(html, css, {
+  return juice.inlineContent(html, css, {
     inlinePseudoElements: true,
     preserveImportant: true,
   });
+}
 
-  writeRichClipboard(inlined, markdown);
-  process.stdout.write("Copied full-stack-blue rich HTML to clipboard.\n");
+function createFullStackBlueDocument(content) {
+  return `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Full Stack Blue</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f5f8fb;
+    }
+
+    body {
+      box-sizing: border-box;
+      padding: 24px 0;
+    }
+
+    .nice-export-page {
+      box-sizing: border-box;
+      width: min(100%, 720px);
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+  </style>
+</head>
+<body>
+  <main class="nice-export-page">
+${content}
+  </main>
+</body>
+</html>
+`;
+}
+
+function defaultOutputPath(markdownPath) {
+  const parsed = path.parse(markdownPath);
+  return path.join(parsed.dir, `${parsed.name}.full-stack-blue.html`);
+}
+
+function main() {
+  const options = parseArgs(process.argv.slice(2));
+  const {markdownPath, copyClipboard} = options;
+  if (!markdownPath) {
+    process.stderr.write(
+      "Usage: node scripts/copy-full-stack-blue.js /path/to/article.md [--out /path/to/article.html] [--no-clipboard]\n"
+    );
+    process.exit(64);
+  }
+
+  const markdown = fs.readFileSync(markdownPath, "utf8");
+  const inlined = createFullStackBlueHtml(markdown);
+  const outputPath = options.outputPath || (!copyClipboard ? defaultOutputPath(markdownPath) : null);
+
+  if (outputPath) {
+    fs.writeFileSync(outputPath, createFullStackBlueDocument(inlined), "utf8");
+    process.stdout.write(`Wrote full-stack-blue HTML to ${outputPath}.\n`);
+  }
+
+  if (copyClipboard) {
+    writeRichClipboard(inlined, markdown);
+    process.stdout.write("Copied full-stack-blue rich HTML to clipboard.\n");
+  }
 }
 
 main();

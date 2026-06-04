@@ -21,7 +21,7 @@
 
 ## Typora 一键复制
 
-项目提供了 Typora 自定义导出命令，可以把当前 Markdown 文件渲染为「全栈蓝」主题，并将已经内联样式的富文本 HTML 写入系统剪贴板。复制后可直接粘贴到微信公众号后台。
+项目提供了 Typora 自定义导出命令，可以把当前 Markdown 文件渲染为「全栈蓝」主题，并将已经内联样式的富文本 HTML 写入系统剪贴板。复制后可直接粘贴到微信公众号后台。也可以指定输出路径，导出一个已经内联样式的 HTML 文件。
 
 相关脚本：
 
@@ -40,10 +40,20 @@ node "/path/to/markdown-nice/scripts/copy-full-stack-blue.js" "${currentPath}"
 Windows 命令示例：
 
 ```powershell
-node "D:\workspace\markdown-nice\scripts\copy-full-stack-blue.js" "${currentPath}"
+"D:\workspace\markdown-nice\scripts\copy-full-stack-blue.cmd" "${currentPath}"
 ```
 
-建议关闭导出命令的输出弹窗，并选择不需要输出文件路径。使用时先保存当前文章，再执行 `File -> Export -> 复制为全栈蓝`，随后粘贴到目标编辑器即可。
+如果想导出 HTML 文件，可以把 Typora 自定义导出命令写成：
+
+```powershell
+"D:\workspace\markdown-nice\scripts\copy-full-stack-blue.cmd" "${currentPath}" --out "${outputPath}" --no-clipboard
+```
+
+如果 Typora 传进来的 `${outputPath}` 是空的，脚本会自动导出到当前 Markdown 同目录，文件名为 `原文件名.full-stack-blue.html`。
+
+这个导出的 HTML 是完整页面，方便直接打开检查效果。真正要粘贴到公众号后台时，更推荐使用上面的剪贴板命令，因为它会把 mdnice 的内联富文本结构直接写入剪贴板。
+
+如果使用剪贴板模式，建议关闭导出命令的输出弹窗，并选择不需要输出文件路径。使用时先保存当前文章，再执行 `File -> Export -> 复制为全栈蓝`，随后粘贴到目标编辑器即可。
 
 ## 友情链接
 

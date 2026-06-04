@@ -6,6 +6,7 @@ param(
     [string]$PlainPath
 )
 
+$ErrorActionPreference = "Stop"
 Add-Type -AssemblyName System.Windows.Forms
 
 $encoding = [System.Text.Encoding]::UTF8
@@ -28,4 +29,16 @@ $cfHtml = $header + $beforeFragment + $html + $afterFragment
 $dataObject = New-Object System.Windows.Forms.DataObject
 $dataObject.SetText($plain, [System.Windows.Forms.TextDataFormat]::UnicodeText)
 $dataObject.SetText($cfHtml, [System.Windows.Forms.TextDataFormat]::Html)
-[System.Windows.Forms.Clipboard]::SetDataObject($dataObject, $true)
+
+$lastError = $null
+for ($attempt = 1; $attempt -le 10; $attempt += 1) {
+    try {
+        [System.Windows.Forms.Clipboard]::SetDataObject($dataObject, $true)
+        exit 0
+    } catch {
+        $lastError = $_
+        Start-Sleep -Milliseconds 200
+    }
+}
+
+throw $lastError
